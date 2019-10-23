@@ -23,8 +23,9 @@
      */
 DIGIT    [0-9]
 HEXD     [A-Fa-f]
-ID       [a-z][_a-z0-9]*
+ID       [a-zA-Z][_a-zA-Z0-9]*
 NUMLIT   [0-9][0-9a-fA-F_.#]*
+CHARLIT  '[^'\\\n]'
 %%
     /*
      * This is the rules section.  It starts with the %% above and continues
@@ -49,6 +50,8 @@ NUMLIT   [0-9][0-9a-fA-F_.#]*
 accessor|and|array|begin|boolean|case|character|constant|else|elsiftrue|end|exit|float|functor|iftrue|in|integer|interface|is|loop|mutator|natural|nil|of|or|others|out|positive|proctor|range|record|rtrn|select|subtype|type|unit|when|while  fprintf(yyout, "%s (keyword)\n", yytext);
      
 {ID}        fprintf(yyout, "%s (identifier)\n", yytext);
+
+{CHARLIT} { fprintf(yyout, "%s (character literal)\n", yytext); }
 
 "/*"([^*]|\*+[^*/])*\*+"/"    fprintf(yyout, "%s (comment)\n", yytext);
 
