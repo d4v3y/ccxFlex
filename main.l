@@ -23,9 +23,18 @@
      */
 DIGIT    [0-9]
 HEXD     [A-Fa-f]
+
 ID       [a-zA-Z][_a-zA-Z0-9]*
+
 NUMLIT   [0-9][0-9a-fA-F_.#]*
 CHARLIT  '[^'\\\n]'
+STRLIT   \"(\\.|[^"\\])*\"
+OPRLIT   "."|"<"|">"|"("|")"|"+"|"-"|"*"|"/"|";"|","|"#"|"["|"]"|"="|":="|".."|"<<"|">>"|"<>"|"<="|">="|"!="|"=>"
+
+KEYW     accessor|and|array|begin|boolean|case|character|constant|else|elsiftrue|end|exit|float|functor|iftrue|in|integer|interface|is|loop|mutator|natural|nil|of|or|others|out|positive|proctor|range|record|rtrn|select|subtype|type|unit|when|while
+
+CMT     "/*"([^*]|\*+[^*/])*\*+"/"
+
 %%
     /*
      * This is the rules section.  It starts with the %% above and continues
@@ -45,23 +54,24 @@ CHARLIT  '[^'\\\n]'
      *
      * Please see http://flex.sourceforge.net for further details.
      */
+
 {NUMLIT} { fprintf(yyout, "%s (numeric literal)\n", yytext); }
 
-accessor|and|array|begin|boolean|case|character|constant|else|elsiftrue|end|exit|float|functor|iftrue|in|integer|interface|is|loop|mutator|natural|nil|of|or|others|out|positive|proctor|range|record|rtrn|select|subtype|type|unit|when|while  fprintf(yyout, "%s (keyword)\n", yytext);
+{KEYW}  fprintf(yyout, "%s (keyword)\n", yytext);
      
-{ID}        fprintf(yyout, "%s (identifier)\n", yytext);
+{ID}   fprintf(yyout, "%s (identifier)\n", yytext);
 
 {CHARLIT} { fprintf(yyout, "%s (character literal)\n", yytext); }
 
-"/*"([^*]|\*+[^*/])*\*+"/"    fprintf(yyout, "%s (comment)\n", yytext);
+{CMT}   fprintf(yyout, "%s (comment)\n", yytext);
 
-\"(\\.|[^"\\])*\"    fprintf(yyout, "%s (string)\n", yytext);
+{STRLIT}   fprintf(yyout, "%s (string)\n", yytext);
      
-"."|"<"|">"|"("|")"|"+"|"-"|"*"|"/"|";"|","|"#"|"["|"]"|"="|":="|".."|"<<"|">>"|"<>"|"<="|">="|"!="|"=>"  fprintf(yyout, "%s (operator)\n", yytext);
+{OPRLIT} fprintf(yyout, "%s (operator)\n", yytext);
 
 [ \t\n]+          /* discard whitespace */
      
-.           fprintf(yyout, "UNK: %s\n", yytext);
+.    fprintf(yyout, "UNK: %s\n", yytext);
      
 %%
 /*
